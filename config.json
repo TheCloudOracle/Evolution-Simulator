@@ -1,0 +1,8 @@
+{
+	"world_size": {
+		"height": 1280,
+		"width": 720
+	},
+	"genome_length": 8,
+	"population": 1000
+}
