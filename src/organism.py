@@ -3,6 +3,13 @@ import pygame
 
 
 class Organism:
+    """
+    Define the organism.
+    Each organism contains the following characteristics:
+        1. It's location on a 2D plane
+        2. It's genome which contains 8-character hexidemicals which govern the organism's behaviour
+        3. A neural network brain which updates the genome
+    """
     def __init__(self, window, world_size, genome_lenth=4):
         self.window = window
         self.world_size = world_size
