@@ -1,5 +1,6 @@
 import random
 import pygame
+import src.neural_network
 
 
 class Organism:
@@ -10,19 +11,55 @@ class Organism:
         2. It's genome which contains 8-character hexidemicals which govern the organism's behaviour
         3. A neural network brain which updates the genome
     """
-    def __init__(self, window, world_size, genome_lenth=4):
+    def __init__(self, window, world_size, config, genome_lenth=4):
+          # Sensory neurons
+        self.sensory_neurons = {
+            'Rnd': random.random(), # Random input
+            'pop': config['population'], # Population Density
+            'BDy': self.border_distance_y, # Distance to north/south border
+            'BDx': self.border_distance_x, # Distance to east/west border
+            'BD': min(self.border_distance_x, self.border_distance_y), # Distance to nearest border
+            'Lx': self.x, # East/west location
+            'Ly': self.y # north/south location
+        }
+
+        # Action neurons
+        self.action_neurons = {
+            'LPD': random.random(), # long probe distance
+            'kill': random.random(), # kill forward neighbor
+            'osc': random.random(), # set oscilator period
+            'SG': random.random(), # emit pheremones
+            'Resx': random.random(), # responsiveness (speed) east/west
+            'Resy': random.random(), # responsiveness (speed) north/south
+            'Mfd': random.random(), # move forward
+            'Mrn': random.random(), # Move random
+            'Mrv': random.random(), # Move reverse
+            'MRL': random.random(), # Move left/right (+/-)
+            'Mx': random.random(), # Move east/west (+/-)
+            'My': random.random() # Move north/south (+/-)
+        }
+
+        self.num_input_neurons = len(self.sensory_neurons)
+        self.num_output_neurons = len(self.action_neurons)
+        
+
         self.window = window
         self.world_size = world_size
         self.radius = 2
         self.location = self.x, self.y = random.randint(0, self.world_size[0]), random.randint(0, self.world_size[1])
         self.genome = [''.join(random.choices('0123456789ABCDEF', k=9)) for _ in range(genome_lenth)]
-        self.brain = None # TODO: make this the neural network(s)
+        self.brain = src.neural_network.Brain() # TODO: make this the neural network(s)
         # TODO: see if these should be random, or a fixed size
         self.speed_x = random.randint(-2, 2)
         self.speed_y = random.randint(-2, 2)
         # TODO: diversify the organisms by color
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
+        # calculations
+        self.border_distance_x = min(self.x, world_size[0] - self.x)
+        self.border_distance_y = min(self.y, world_size[1] - self.y)
+
+      
     def __repr__(self):
         return f"""
                 Creature:\n
@@ -44,8 +81,6 @@ class Organism:
         if self.y <= 0 or self.y >= self.world_size[1]:
             self.speed_y = 0
             self.speed_x = 0
-
-        return self.x, self.y
 
     def draw(self, window):
         pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)        
