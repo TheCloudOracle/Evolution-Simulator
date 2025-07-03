@@ -17,7 +17,7 @@ def load_configs(filepath: Path='config.json'):
 def init_orgs(window):
     genome_length = configs['genome_length']
     population_size = configs['population']
-    organisms = [Organism(window, world_size, genome_length) for _ in range(population_size)]
+    organisms = [Organism(window, world_size, configs, genome_length) for _ in range(population_size)]
     return organisms
 
 
@@ -29,27 +29,14 @@ def start():
     running = True
 
     while running:
-        positions = []
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
         
         for org in orgs:
-            x, y = org.move()
-            positions.append((x, y))
-        
-        for org in orgs:
-            if (org.x, org.y) in positions:
-                if org.x <= 0:
-                    org.x += 10
-                elif org.x >= world_size[0]:
-                    org.x -= 10
-                
-                if org.y <= 0:
-                    org.y += 1
-                elif org.y >= world_size[1]:
-                    org.y -= 1
+            org.move()
+
 
         window.fill((255, 255, 255))
         for org in orgs:
