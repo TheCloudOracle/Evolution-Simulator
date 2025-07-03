@@ -4,5 +4,6 @@
 		"width": 720
 	},
 	"genome_length": 8,
-	"population": 1000
+	"population": 1000,
+	"num_internal_neurons": 2
 }

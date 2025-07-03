@@ -1,5 +1,6 @@
 import random
 import pygame
+import math
 import src.neural_network
 
 
@@ -12,7 +13,23 @@ class Organism:
         3. A neural network brain which updates the genome
     """
     def __init__(self, window, world_size, config, genome_lenth=4):
-          # Sensory neurons
+        self.window = window
+        self.world_size = world_size
+        self.radius = 2
+        self.location = self.x, self.y = random.randint(0, self.world_size[0]), random.randint(0, self.world_size[1])
+        self.genome = [''.join(random.choices('0123456789ABCDEF', k=9)) for _ in range(genome_lenth)]
+        self.brain = None # TODO: make this the neural network(s)
+        # TODO: see if these should be random, or a fixed size
+        self.speed_x = random.randint(-2, 2)
+        self.speed_y = random.randint(-2, 2)
+        # TODO: diversify the organisms by color
+        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+        # calculations
+        self.border_distance_x = min(self.x, world_size[0] - self.x)
+        self.border_distance_y = min(self.y, world_size[1] - self.y)
+
+        # Sensory neurons
         self.sensory_neurons = {
             'Rnd': random.random(), # Random input
             'pop': config['population'], # Population Density
@@ -43,22 +60,6 @@ class Organism:
         self.num_output_neurons = len(self.action_neurons)
         
 
-        self.window = window
-        self.world_size = world_size
-        self.radius = 2
-        self.location = self.x, self.y = random.randint(0, self.world_size[0]), random.randint(0, self.world_size[1])
-        self.genome = [''.join(random.choices('0123456789ABCDEF', k=9)) for _ in range(genome_lenth)]
-        self.brain = src.neural_network.Brain() # TODO: make this the neural network(s)
-        # TODO: see if these should be random, or a fixed size
-        self.speed_x = random.randint(-2, 2)
-        self.speed_y = random.randint(-2, 2)
-        # TODO: diversify the organisms by color
-        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-
-        # calculations
-        self.border_distance_x = min(self.x, world_size[0] - self.x)
-        self.border_distance_y = min(self.y, world_size[1] - self.y)
-
       
     def __repr__(self):
         return f"""
@@ -84,3 +85,18 @@ class Organism:
 
     def draw(self, window):
         pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius)        
+
+    def gene_decoding(self, gene):
+        sensory_neurons_keys = self.sensory_neurons.keys()
+        action_neurons_keys = self.action_neurons.keys()
+        # Convert gene to decimal
+        binary_repr = bin(int(gene, 16))[2:]
+        # Determine the input neuron - first byte of gene
+        sensory_neuron_index = int(binary_repr[:8], 2) % self.num_input_neurons
+        sensory_neuron_key = list(sensory_neurons_keys)[sensory_neuron_index] # Use this to index the dictionary
+        # Deterome the output neuron - second byte of gene
+        action_neuron_index = int(binary_repr[8:16], 2) % self.num_output_neurons
+        action_neuron_key = list(action_neurons_keys)[action_neuron_index]
+        weight = 1 / (1 + math.log(1 + abs(int(binary_repr[16:], 2))))
+ 
+        return sensory_neuron_key, action_neuron_key, weight
