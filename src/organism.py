@@ -18,7 +18,6 @@ class Organism:
         self.radius = 2
         self.location = self.x, self.y = random.randint(0, self.world_size[0]), random.randint(0, self.world_size[1])
         self.genome = [''.join(random.choices('0123456789ABCDEF', k=9)) for _ in range(genome_lenth)]
-        self.brain = None # TODO: make this the neural network(s)
         # TODO: see if these should be random, or a fixed size
         self.speed_x = random.randint(-2, 2)
         self.speed_y = random.randint(-2, 2)
@@ -51,14 +50,13 @@ class Organism:
             'Mfd': random.random(), # move forward
             'Mrn': random.random(), # Move random
             'Mrv': random.random(), # Move reverse
-            'MRL': random.random(), # Move left/right (+/-)
             'Mx': random.random(), # Move east/west (+/-)
             'My': random.random() # Move north/south (+/-)
         }
 
         self.num_input_neurons = len(self.sensory_neurons)
         self.num_output_neurons = len(self.action_neurons)
-        
+        self.brain = list(self.action_neurons.values()) # Update using the neural network
 
       
     def __repr__(self):

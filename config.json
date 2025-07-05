@@ -5,5 +5,12 @@
 	},
 	"genome_length": 8,
 	"population": 1000,
-	"num_internal_neurons": 2
+	"num_internal_neurons": 2,
+	"survival_area": 0,
+	"survival_area_size": {
+    "width_ratio": 0.25,
+    "height_ratio": 1.0,
+    "x_offset_ratio": 0.75,
+    "y_offset_ratio": 0.0
+  }
 }
